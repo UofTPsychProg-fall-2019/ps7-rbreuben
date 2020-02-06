@@ -1,0 +1,41 @@
+Explanation of the data: Prior research has shown that subjective cognitive decline (SCD), 
+or a self-experienced persistent decline in cognitive capacity, is associated with an increased likelihood
+for conversion to mild cognitive impairment (MCI) and Alzheimer's disease (AD). Additionally, women with early estrogen loss 
+due to oophorectomy (ovarian removal) prior to spontaneous menopause, have an increased risk of AD in later years. 
+Therefore the current study aims to examine the effect of SCD on cognition in women with oophorectomy (BSO) 
+as compared to age-matched controls (AMC).
+
+IVs: SCD status (yes/no); group status (BSO/AMC)
+Covariates: age; Education (edu_years); Estrogen Level (E1G); depressive mood (CESD)
+DVs: Neuropsychological battery -- Logical Memory, RAVLT, Digits Backwards, 
+Digit Ordering Task, Spatial Working Memory Task, Verbal Fluency
+
+neurodata <- read.csv(~/neurodataset.csv)
+demodata <- read.csv(~/demodataset.csv)
+
+data <- merge(neurodata & demodata, by = "ID) #merge neuro and demo data
+
+data <- subset(data, group == 1 | 3, !is.na(SCD)) #keep only BSO (group 1) and AMC (group 3) who have SCD data
+
+data$SCD <- recode(data$SCD, 'yes' == 1, 'no' == -1) #recode yes and no to 1 and -1
+
+data$CESDhigh <- if data$CESD < 16, -1, #create variable for depressive mood above cutoff
+		 else 1
+data %>%
+	group_by(group) %>% 
+	count(SCD) #count number of participants in each group by SCD status
+
+hist(Logical Memory, RAVLT, Digits Backwards, #make histograms of all the neuropsych tasks to visually inspect
+Digit Ordering Task, Spatial Working Memory Task, Verbal Fluency)
+
+hist(age, edu_years, E1G, CESD) #hist covariates to visually inspect 
+skewness(age, edu_years, E1G) #check for skewness
+
+data$E1G_w <- winsorize(E1G) #winsorize to deal with outliers
+
+#ready for analysis!
+
+
+
+
+
